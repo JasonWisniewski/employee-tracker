@@ -45,7 +45,7 @@ function firstQuestion() {
       else if(first === "add a role"){
         addRole();
       }
-      else if(first === "add a employee"){
+      else if(first === "add an employee"){
         addEmployee();
       }
       else if(first === "update an employee role"){
@@ -115,73 +115,65 @@ function addRole(){
 };
 
 function addEmployee(){
-  inquirer.prompt([
-    {
-      type: 'input',
-      name: 'employeeFirstName',
-      message: 'what is the first name of the employee you would like to add?'
-    },
-    {
-      type: 'input',
-      name: 'employeeLastName',
-      message: 'what is the last name of the employee you would like to add?'
-    },
-    {
-      type: 'input',
-      name: 'employeeRole',
-      message: 'what is the employee role?'
-    },
-    {
-      type: 'input',
-      name: 'employeeManager',
-      message: 'who is the manager of the employee?'
+  db.query('SELECT name FROM job_role', (error, res) => {
+      if(error) {
+        console.log('error no show')
+        throw error;
+      } else {
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'employeeFirstName',
+        message: 'what is the first name of the employee you would like to add?'
+      },
+      {
+        type: 'input',
+        name: 'employeeLastName',
+        message: 'what is the last name of the employee you would like to add?'
+      },
+      {
+        type: 'list',
+        name: 'employeeRole',
+        message: 'what is the employees role?',
+        choices: res
+      },
+      {
+        type: 'input',
+        name: 'employeeManager',
+        message: 'who is the manager of the employee?'
+      }
+      ]).then(({ employeeFirstName, employeeLastName, employeeRole ,employeeManager }) => { db.query('SELECT id FROM department WHERE name = ?',roleDepartment, (error, res) => {
+      if(error){
+        throw error;
+      }else {console.log('ayyyooo')}
+    })
+    })
     }
-  ])
-  // .then() push dept name in to db or push into array that we will push into db later?
-};
+  })
+}
 
-function upDateEmployeeRole(){
-  inquirer.prompt([
-    {
-      type: "list",
-      name: "employeeList",
-      message: "Which employee would you like to update?",
-      choices: [
-        "list of employees from db",
-        "more employees",
-      ],
-    },
-    {
-      type: 'input',
-      name: 'updateNewRole',
-      message: 'what is the new role of this employee?'
-    },
-    {
-      type: 'input',
-      name: 'employeeManager',
-      message: 'who is the employees new manager?'
-    }
-  ])
-  // .then() push dept name in to db or push into array that we will push into db later?
-};
+// function upDateEmployeeRole(){
+//   inquirer.prompt([
+//     {
+//       type: "list",
+//       name: "employeeList",
+//       message: "Which employee would you like to update?",
+//       choices: [
+//         "list of employees from db",
+//         "more employees",
+//       ],
+//     },
+//     {
+//       type: 'input',
+//       name: 'updateNewRole',
+//       message: 'what is the new role of this employee?'
+//     },
+//     {
+//       type: 'input',
+//       name: 'employeeManager',
+//       message: 'who is the employees new manager?'
+//     }
+//   ])
+// }
 
 firstQuestion();
-
-// instead of req.params.id pass employee or role from inquirer
-// will have multiple queries for insert into job_role vs insert into department, and employee
-// code from module work
-// db.query(sql, req.params.id, (err, result) => {
-//   if (err) {
-//     res.status(400).json({ error: res.message });
-//   } else if (!result.affectedRows) {
-//     res.json({
-//       message: 'Voter not found'
-//     });
-//   } else {
-//     res.json({
-//       message: 'deleted',
-//       changes: result.affectedRows,
-//       id: req.params.id
-//     });
-//   }
-// })
