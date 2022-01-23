@@ -16,7 +16,7 @@ function firstQuestion() {
           "add a role",
           "add an employee",
           "update an employee role",
-          "I'm done with all of this shizz!"
+          "I'm done exit application"
         ],
       },
     ])
@@ -52,6 +52,8 @@ function firstQuestion() {
         addEmployee();
       } else if (first === "update an employee role") {
         upDateEmployeeRole();
+      } else if (first === "I'm done exit application"){
+        console.log('goodbye')
       }
     });
 }
