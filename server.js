@@ -195,11 +195,19 @@ async function upDateEmployeeRole() {
       choices: inquirerListRole
     }
   ])
-  // console.log(employeeName);
-  // need to split array up so we can get the first and last name individually to search for employee in database then update role.
+  // need to split string up so we can get the first and last name individually to search for employee in database then update role.
+  const updateQuery = await 
+  console.log(employeeName);
   const splitArray = employeeName.split("");
   const lastName = splitArray[1];
   const firstName = splitArray[0];
+  db
+    .promise()
+    .query(`UPDATE employee
+    SET role_id = (?),
+    WHERE first_name = (?) AND
+      last_name= (?)`, [employeeNewRole, firstName, lastName])
+    
   
   
   const insertUpdate = await db
