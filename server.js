@@ -16,7 +16,7 @@ function firstQuestion() {
           "add a role",
           "add an employee",
           "update an employee role",
-          "I'm done exit application"
+          "I'm done exit application",
         ],
       },
     ])
@@ -52,8 +52,8 @@ function firstQuestion() {
         addEmployee();
       } else if (first === "update an employee role") {
         upDateEmployeeRole();
-      } else if (first === "I'm done exit application"){
-        console.log('goodbye')
+      } else if (first === "I'm done exit application") {
+        console.log("goodbye");
       }
     });
 }
@@ -168,7 +168,6 @@ async function addEmployee() {
 }
 
 async function upDateEmployeeRole() {
-  
   const roleList = await db.promise().query("SELECT title,id FROM job_role");
   const inquirerListRole = roleList[0].map((role) => ({
     name: role.title,
@@ -176,49 +175,49 @@ async function upDateEmployeeRole() {
   }));
   const employeeList = await db
     .promise()
-    .query("SELECT id,CONCAT(first_name, ' ', last_name) as name FROM employee");
+    .query(
+      "SELECT id, CONCAT(first_name, ' ', last_name) as name FROM employee"
+    );
   const inquirerListEmployee = employeeList[0].map((employee) => ({
     name: employee.name,
-    value: employee.employee_id,
+    value: employee.id,
   }));
-  const { employeeName, employeeNewRole } = await inquirer.prompt ([
+  const { employeeName, employeeNewRole } = await inquirer.prompt([
     {
       type: "list",
-      name: 'employeeName',
+      name: "employeeName",
       message: "What is the name of the employee?",
-      choices: inquirerListEmployee
+      choices: inquirerListEmployee,
     },
     {
       type: "list",
-      name: 'employeeNewRole',
+      name: "employeeNewRole",
       message: "What is the new role of the employee?",
-      choices: inquirerListRole
+      choices: inquirerListRole,
     }
-  ])
-  // need to split string up so we can get the first and last name individually to search for employee in database then update role.
-  const updateQuery = await 
+  ]);
   console.log(employeeName);
-  const splitArray = employeeName.split("");
-  const lastName = splitArray[1];
-  const firstName = splitArray[0];
-  db
-    .promise()
-    .query(`UPDATE employee
-    SET role_id = (?),
-    WHERE first_name = (?) AND
-      last_name= (?)`, [employeeNewRole, firstName, lastName])
-    
-  
-  
-  const insertUpdate = await db
-  .promise()
-  .query(
+  console.log(employeeNewRole);
+  // receiving back id of employee
+  // need to take this info and shove new role into employee table
+  // need to take employeeNewRole (is role id) and update employee table to this new role.  should update correctly if foreign keys are set up properly in DB
+  const updateQuery = await db
+  .promise().query(
     `UPDATE employee
     SET role_id = (?),
     WHERE first_name = (?) AND
-      last_name= (?)`, [employeeNewRole, firstName, lastName]
-  )
-  console.log(employeeNewRole)
+      last_name= (?)`,
+    [employeeNewRole, firstName, lastName]
+  );
+
+  const insertUpdate = await db.promise().query(
+    `UPDATE employee
+    SET role_id = (?),
+    WHERE first_name = (?) AND
+      last_name= (?)`,
+    [employeeNewRole, firstName, lastName]
+  );
+  console.log(employeeNewRole);
 }
 
 firstQuestion();
