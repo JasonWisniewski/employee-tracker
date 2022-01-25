@@ -18,7 +18,7 @@ clone the repo.
 ## Usage
 a walk through of the application can be found at.
 
-https://youtu.be/WCgfzjqsg38
+https://watch.screencastify.com/v/6FkYQKAQKPMhGdrzWOcw
 
 This can be used for any manager looking to store their employee data in a simple to use database.
 
