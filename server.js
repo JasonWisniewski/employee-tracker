@@ -28,6 +28,7 @@ function firstQuestion() {
           .query("SELECT * FROM department")
           .then((viewDepartments) => {
             console.table(viewDepartments[0]);
+            firstQuestion();
           });
       } else if (first === "view all employees") {
         // no need to have if with error since we are using promise.
@@ -35,6 +36,7 @@ function firstQuestion() {
           .query("SELECT * FROM employee")
           .then((viewDepartments) => {
             console.table(viewDepartments[0]);
+            firstQuestion();
           });
       } else if (first === "view all roles") {
         // no need to have if with error since we are using promise.
@@ -58,25 +60,21 @@ function firstQuestion() {
     });
 }
 
-function addDepartment() {
+async function addDepartment() {
+  const { departmentName } = await 
   inquirer
-    .prompt([
+  .prompt([
       {
         type: "input",
         name: "departmentName",
         message: "What is the name of the department you would like to add?",
       },
     ])
-    .then(({ departmentName }) => {
-      db.query(`INSERT INTO department (name) VALUES (?)`, departmentName),
-        (error) => {
-          if (error) {
-            throw error;
-          } else {
-            console.log(`success! ${departmentName} added`);
-          }
-        };
-    });
+  const deptQuery = await db
+  .promise()
+  .query(`INSERT INTO department (name) VALUES (?)`, departmentName);  
+  console.log(`success! ${departmentName} added`);
+  firstQuestion();
 }
 
 async function addRole() {
@@ -111,7 +109,7 @@ async function addRole() {
       "INSERT INTO job_role  (title, salary, department_id) VALUES (?, ?, ?)",
       [roleName, roleSalary, roleDepartment]
     );
-  console.log("success it worked!");
+  console.log(`success ${roleName} added!`);
   firstQuestion();
 }
 
@@ -124,9 +122,9 @@ async function addEmployee() {
   }));
   const employeeList = await db
     .promise()
-    .query("SELECT manager_id,last_name FROM employee");
+    .query("SELECT manager_id,CONCAT (first_name,' ',last_name) as name FROM employee");
   const inquirerListManager = employeeList[0].map((manager) => ({
-    name: manager.last_name,
+    name: manager.name,
     value: manager.manager_id,
   }));
   const { employeeFirstName, employeeLastName, employeeRole, employeeManager } =
@@ -196,28 +194,15 @@ async function upDateEmployeeRole() {
       choices: inquirerListRole,
     }
   ]);
-  console.log(employeeName);
-  console.log(employeeNewRole);
-  // receiving back id of employee
-  // need to take this info and shove new role into employee table
-  // need to take employeeNewRole (is role id) and update employee table to this new role.  should update correctly if foreign keys are set up properly in DB
   const updateQuery = await db
   .promise().query(
     `UPDATE employee
-    SET role_id = (?),
-    WHERE first_name = (?) AND
-      last_name= (?)`,
-    [employeeNewRole, firstName, lastName]
+    SET role_id = (?)
+    WHERE id = (?)`,
+    [employeeNewRole, employeeName]
   );
-
-  const insertUpdate = await db.promise().query(
-    `UPDATE employee
-    SET role_id = (?),
-    WHERE first_name = (?) AND
-      last_name= (?)`,
-    [employeeNewRole, firstName, lastName]
-  );
-  console.log(employeeNewRole);
+  console.log(`the employees role has been updated `);
+  firstQuestion();
 }
 
 firstQuestion();
